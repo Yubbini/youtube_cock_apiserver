@@ -1,0 +1,46 @@
+<!--
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<body>
+    <h1>로그인</h1>
+    <form method="POST" action="/">
+        <label for="userId">아이디</label>
+        <input type="text" id="userId" name="userId"><br>
+        <label for="password">비밀번호</label>
+        <input type="password" id="password" name="password"><br>
+        <button>로그인</button>
+    </form>
+</body>
+
+</html>
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>login</title>
+    <meta charset="UTF-8" />
+    <style>
+        #google_login_btn {
+            background-image: url("../images/btn_google_signin_dark_normal_web@2x.png") no-repeat;
+            background-size: 100% 100%;
+            cursor: pointer;
+            width: 200px;
+            height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <form method="GET" action="/auth/google">
+        <input id="google_login_btn" type="submit" name="" />
+    </form>
+</body>
+
+</html>
