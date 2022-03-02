@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan')
@@ -8,6 +9,7 @@ const mongoose = require('mongoose');
 const indexRouter = require('./routes/index');
 
 const app = express();
+app.use(cors());
 
 const expressSession = require('express-session');
 const passport = require('./passport.js');
