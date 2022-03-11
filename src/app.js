@@ -4,11 +4,14 @@ const express = require('express')
 const swagger_ui = require('swagger-ui-express')
 const app = express()
 
-const swagger_on = process.env.SWAGGER_ON || 'true'
+const cors = require('cors')
+const body_parser = require('body-parser')
 
-if (swagger_on === 'true') {
-    app.use('/swagger_docs', swagger_ui.serve, swagger_ui.setup(require('./swagger_docs')))
-}
+const api = require('./routes/api')
+
+app.use(cors())
+app.use(body_parser.json())
+app.use(body_parser.urlencoded())
 
 /**
  * @swagger
@@ -16,6 +19,10 @@ if (swagger_on === 'true') {
  *   name: HelloWorld
  *   description: Health Checker
  */
+const swagger_on = process.env.SWAGGER_ON || 'true'
+if (swagger_on === 'true') {
+    app.use('/swagger_docs', swagger_ui.serve, swagger_ui.setup(require('./swagger_docs')))
+}
 
 /**
  * @swagger
@@ -33,5 +40,6 @@ if (swagger_on === 'true') {
 app.get('/', (req, res) => {
     res.send('Hello World!')
 })
+app.use('/api', api)
 
 module.exports = app

@@ -12,13 +12,14 @@ const swaggerDefinition = {
         description : 'youtube_cock_docs'
     },
     host : `${host}:${port}`,
-    basePath : '/'
+    basePath : '/',
+    schemes: ['http', 'https']
 };
 
 const options = {
     swaggerDefinition: swaggerDefinition,
     apis: [
-        `${__dirname}/routes/*.js`,
+        `${__dirname}/routes/**/*.js`,
         `${__dirname}/app.js`
     ]
 };
