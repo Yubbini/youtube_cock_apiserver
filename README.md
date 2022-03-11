@@ -37,6 +37,17 @@ YoutubeCock을 실행하기 전 의존성을 설치가 필요합니다.
 $ npm install
 ```
 
+### Docker
+YoutubeCock에서 사용하는 환경을 세팅하기 위해 [docker-compose](https://docs.docker.com/compose/) 를 사용하고 있습니다.
+
+- mongoDB
+- mongo-express
+
+```shell
+$ cd compose
+$ docker-compose up -d
+```
+
 ## How to start
 
 ### Start
