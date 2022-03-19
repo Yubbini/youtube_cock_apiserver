@@ -7,7 +7,11 @@ const app = express()
 const cors = require('cors')
 const body_parser = require('body-parser')
 
+const logger = require('./middlewares/logger')
+
 const api = require('./routes/api')
+
+app.use(logger)
 
 app.use(cors())
 app.use(body_parser.json())
