@@ -2,8 +2,43 @@
 
 const express = require('express')
 const {google} = require('googleapis');
+const {OAuth2Client} = require('google-auth-library');
+
+var cock = require('../../../models/cock');
 
 const router = express.Router()
+
+const client = new OAuth2Client(process.env['GOOGLE_CLIENT_ID']);
+async function verify(id_token) {
+  const ticket = await client.verifyIdToken({
+      idToken: id_token
+  });
+  const payload = ticket.getPayload();
+  console.log(payload);
+  cock.findOne({ uid : payload['sub'] }, function(err, docs){
+      if(err){
+          console.log('findOne error')
+      }
+      else if(!docs){
+          var cockModel = new cock(
+              {
+                uid : payload['sub'],
+                name : payload['name'],
+                email : payload['email'],
+                picture : payload['picture'],
+                locale : payload['locale']
+              }
+          );
+          cockModel.save();
+      }
+      else{
+          console.log('데이터 베이스에 존재하는 유저 정보입니다.')
+      }
+  })
+  //const userid = payload['sub'];
+  // If request specified a G Suite domain:
+  // const domain = payload['hd'];
+}
 
 const googleOauthClient = new google.auth.OAuth2(
     process.env['GOOGLE_CLIENT_ID'],
@@ -20,6 +55,7 @@ router.get('/login/google', (req, res) => {
     res.redirect(googleOauthClient.generateAuthUrl({ scope: scopes }))
 })
 
+
 router.get('/oauth2/redirect/google', (req, res) => {
     googleOauthClient
         .getToken(req.query['code'])
@@ -33,10 +69,22 @@ router.get('/oauth2/redirect/google', (req, res) => {
                     const payload = loginTicket.getPayload()
                     res.json({
                         google_access_token: tokens.access_token,
+                        google_id_token: tokens.id_token,
                         google_user_id: payload.sub,
                         google_email: payload.email
                     })
                 })
+        })
+})
+
+router.get('/verify', (req, res) => {
+    var id_token = req.query.id_token
+    verify(id_token)
+        .then(()=>{
+            res.sendStatus(200)
+        })
+        .catch((err)=>{
+            res.status(400).send('unverified')
         })
 })
 

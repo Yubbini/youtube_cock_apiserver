@@ -1,6 +1,9 @@
 'use strict'
 
-const express = require('express')
+const express = require('express');
+const { displayvideo_v1beta } = require('googleapis');
+const cock = require('../../../models/cock');
+
 const router = express.Router()
 
 /**
@@ -64,6 +67,62 @@ router.get('/', (req, res) => {
         }
     ])
 })
+
+router.post('/add_playlist', (req, res) => {
+    const data = req.body;
+    cock.updateOne(
+        {uid : data.uid},
+        {
+            $push : {
+                playlist : {
+                    id : data.playlist.id,
+                    title : data.playlist.title,
+                    color : data.playlist.color
+                }
+            }
+        }, function(err, docs){
+            if(err) res.status(500).send({message : err});
+            else if(!docs) res.status(400).send({message: "user not found"});
+            else res.sendStatus(200)
+        }
+    )
+})
+
+router.get('/find_playlist', (req, res) => {
+    const data = req.body;
+    cock.findOne(
+        {uid : data.uid},
+        function(err, docs){
+            if(err) res.status(500).send({message : err});
+            else if(!docs) res.status(400).send({message : "user not found"});
+            else res.status(200).json({
+                playlist : docs.playlist
+            })
+        }
+    )
+})
+
+router.delete('/delete_playlist', (req, res) => {
+    const data = req.body;
+    cock.updateOne(
+        {uid : data.uid},
+        {
+            $pull : {
+                playlist : {
+                    id : data.id
+                }
+            }
+        }, function(err, docs){
+            if(err) res.status(500).send({message : err});
+            else if(!docs) res.status(400).send({message : "user not found"})
+            else res.status(200).json({
+                playlist : docs.playlist
+            })
+        }
+    )
+})
+
+router.get('/')
 
 /**
  * @swagger
