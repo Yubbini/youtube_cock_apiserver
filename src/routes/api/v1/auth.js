@@ -77,8 +77,27 @@ router.get('/oauth2/redirect/google', (req, res) => {
         })
 })
 
-router.get('/verify', (req, res) => {
-    var id_token = req.query.id_token
+/**
+ * @swagger
+ * /api/v1/auth/verify/{id}:
+ *  get:
+ *      description: Verify Id_token
+ *      tags: [Auth]
+ *      parameters:
+ *          - in: path
+ *            name: id
+ *            type: string
+ *            required: true
+ *            description: user_id_token
+ *      responses:
+ *          200:
+ *              description: OK
+ *          400:
+ *              description: unverified
+ */
+
+router.get('/verify/:id', (req, res) => {
+    var id_token = req.params.id
     verify(id_token)
         .then(()=>{
             res.sendStatus(200)

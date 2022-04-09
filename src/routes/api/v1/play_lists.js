@@ -9,76 +9,76 @@ const router = express.Router()
 /**
  * @swagger
  * definitions:
- *   Id:
- *     type: object
- *     required:
- *       -id
- *     properties:
- *       id:
- *         type: integer
- *         description: id
- *   PlayList:
- *     type: object
- *     required:
- *       - id
- *       - title
- *       - color
- *     properties:
- *       id:
- *         type: integer
- *         description: id
- *       title:
- *         type: string
- *         description: title
- *       color:
- *         type: integer
- *         description: color
+ *  cock:
+ *      type: object
+ *      properties:
+ *          uid:
+ *              type: string
+ *          name:
+ *              type: string
+ *          email:
+ *              type: string
+ *          picture:
+ *              type: string
+ *          locale:
+ *              type: string
+ *          playlist:
+ *              type: array
+ *              items:
+ *                  type: object
+ *                  properties:
+ *                      id:
+ *                          type: string
+ *                      title:
+ *                          type: string
+ *                      color:
+ *                          type: string
+ *  playlist:
+ *      type: object
+ *      properties:
+ *          id:
+ *              type: string
+ *          title:
+ *              type: string
+ *          color:
+ *              type: string
  */
+
 
 /**
  * @swagger
- * /api/v1/play_lists:
- *   get:
- *     description: Get playlists
- *     tags: [PlayList]
- *     produces:
- *     - "application/json"
- *     responses:
- *       "200":
- *         description: "playlists"
- *         schema:
- *           type: array
- *           items:
- *             allOf:
- *               - $ref: '#/definitions/PlayList'
- *
+ * /api/v1/play_lists/add_playlist:
+ *  post:
+ *      description: Add playlists.
+ *      tags: [PlayList]
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          uid:
+ *                              type: string
+ *                          playlist:
+ *                              type: array
+ *                              items:
+ *                                  $ref: '#/definitions/playlist'
+ *      responses:
+ *          200:
+ *              description: OK
+ *          400:
+ *              description: user not found
+ *          500:
+ *              description: server error
  */
-router.get('/', (req, res) => {
-    res.json([
-        {
-            id: 1,
-            title: 'title1',
-            color: 0xffffff
-        },
-        {
-            id: 2,
-            title: 'title2',
-            color: 0xff0000
-        }
-    ])
-})
-
 router.post('/add_playlist', (req, res) => {
     const data = req.body;
     cock.updateOne(
         {uid : data.uid},
         {
             $push : {
-                playlist : {
-                    id : data.playlist.id,
-                    title : data.playlist.title,
-                    color : data.playlist.color
-                }
+                playlist : data.playlist
             }
         }, function(err, docs){
             if(err) res.status(500).send({message : err});
@@ -88,8 +88,29 @@ router.post('/add_playlist', (req, res) => {
     )
 })
 
-router.get('/find_playlist', (req, res) => {
-    const data = req.body;
+/**
+ * @swagger
+ * /api/v1/play_lists/find_playlist/{uid}:
+ *  get:
+ *      description: Returns a playlists of the user in the database.
+ *      tags: [PlayList]
+ *      parameters:
+ *          - in: path
+ *            name: uid
+ *            type: string
+ *            required: true
+ *            description: user_id
+ *      responses:
+ *          200:
+ *              description: OK
+ *          400:
+ *              description: user not found
+ *          500:
+ *              description: server error
+ */
+
+router.get('/find_playlist/:uid', (req, res) => {
+    const data = req.params;
     cock.findOne(
         {uid : data.uid},
         function(err, docs){
@@ -102,8 +123,35 @@ router.get('/find_playlist', (req, res) => {
     )
 })
 
-router.delete('/delete_playlist', (req, res) => {
-    const data = req.body;
+/**
+ * @swagger
+ * /api/v1/play_lists/delete_playlist/{uid}/{id}:
+ *  delete:
+ *      description: Delete a playlist of the user in the database.
+ *      tags: [PlayList]
+ *      parameters:
+ *          - in: path
+ *            name: uid
+ *            type: string
+ *            required: true
+ *            description: user_id
+ *          - in: path
+ *            name: id
+ *            type: string
+ *            required: true
+ *            description: playlist_id
+ *      responses:
+ *          200: 
+ *              description: Playlists remaining in the user's database.
+ *          400:
+ *              description: user not found
+ *          500:
+ *              description: server error
+ *          
+ */
+
+router.delete('/delete_playlist/:uid/:id', (req, res) => {
+    const data = req.params;
     cock.updateOne(
         {uid : data.uid},
         {
@@ -115,53 +163,15 @@ router.delete('/delete_playlist', (req, res) => {
         }, function(err, docs){
             if(err) res.status(500).send({message : err});
             else if(!docs) res.status(400).send({message : "user not found"})
-            else res.status(200).json({
-                playlist : docs.playlist
-            })
+            else {
+                playlist : cock.findOne({uid:data.uid},function(err, docs2){
+                    if(err);
+                    else if(!docs);
+                    else res.status(200).send(docs2.playlist)
+                })
+            }
         }
     )
-})
-
-router.get('/')
-
-/**
- * @swagger
- * /api/v1/play_lists:
- *   post:
- *     description: Create playlists
- *     tags: [PlayList]
- *     produces:
- *       - "application/x-www-form-urlencoded"
- *       - "application/json"
- *     parameters:
- *       - name: id
- *         description: id
- *         in: formData
- *         required: true
- *         type: integer
- *       - name: title
- *         description: title
- *         in: formData
- *         required: true
- *         type: string
- *       - name: color
- *         description: color
- *         in: formData
- *         type: integer
- *     responses:
- *       "201":
- *         description: "Created playlist id"
- *         schema:
- *           type: object
- *           $ref: '#/definitions/Id'
- *
- *
- */
-router.post('/', (req, res) => {
-    res.status(201)
-    res.json({
-        id: req.body.id
-    })
 })
 
 module.exports = router
