@@ -24,6 +24,7 @@
     "google-auth-library": "^7.14.1",
     "googleapis": "^97.0.0",
     "mongoose": "^6.2.10",
+    "request": "^2.88.2",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.3.0"
   },
