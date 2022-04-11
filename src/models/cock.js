@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 
 var cockSchema = new mongoose.Schema({
     uid : String,
@@ -9,10 +9,10 @@ var cockSchema = new mongoose.Schema({
     playlist: [{
         id : String,
         title : String,
-        color : String
+        color : Number
     }]
-});
+})
 
-var cock = mongoose.model('cock', cockSchema);
+var cock = mongoose.model('cock', cockSchema)
 
-module.exports = cock;
+module.exports = cock

@@ -1,43 +1,37 @@
 'use strict'
 
 const express = require('express')
-const {google} = require('googleapis');
-const {OAuth2Client} = require('google-auth-library');
+const {google} = require('googleapis')
+const {OAuth2Client} = require('google-auth-library')
 
-var cock = require('../../../models/cock');
+var cock = require('../../../models/cock')
 
 const router = express.Router()
 
-const client = new OAuth2Client(process.env['GOOGLE_CLIENT_ID']);
+const client = new OAuth2Client(process.env['GOOGLE_CLIENT_ID'])
+
 async function verify(id_token) {
-  const ticket = await client.verifyIdToken({
-      idToken: id_token
-  });
-  const payload = ticket.getPayload();
-  console.log(payload);
-  cock.findOne({ uid : payload['sub'] }, function(err, docs){
-      if(err){
-          console.log('findOne error')
-      }
-      else if(!docs){
-          var cockModel = new cock(
-              {
-                uid : payload['sub'],
-                name : payload['name'],
-                email : payload['email'],
-                picture : payload['picture'],
-                locale : payload['locale']
-              }
-          );
-          cockModel.save();
-      }
-      else{
-          console.log('데이터 베이스에 존재하는 유저 정보입니다.')
-      }
-  })
-  //const userid = payload['sub'];
-  // If request specified a G Suite domain:
-  // const domain = payload['hd'];
+    const ticket = await client.verifyIdToken({
+        idToken: id_token
+    })
+    const payload = ticket.getPayload()
+    console.log(payload)
+    cock.findOne({uid : payload['sub']}, function(err, docs){
+        if(err) console.log(err)
+        else if(!docs){
+            var cockModel = new cock(
+                {
+                    uid : payload['sub'],
+                    name : payload['name'],
+                    email : payload['email'],
+                    picture :  payload['picture'],
+                    locale : payload['locale']
+                }
+            )
+            cockModel.save()
+        }
+        else console.log('데이터 베이스에 존재하는 유저 정보입니다.')
+    })
 }
 
 const googleOauthClient = new google.auth.OAuth2(
@@ -45,6 +39,7 @@ const googleOauthClient = new google.auth.OAuth2(
     process.env['GOOGLE_CLIENT_SECRET'],
     process.env['GOOGLE_CLIENT_CALLBACK_URL']
 )
+
 const scopes = [
     'email',
     'profile',
@@ -52,7 +47,7 @@ const scopes = [
 ]
 
 router.get('/login/google', (req, res) => {
-    res.redirect(googleOauthClient.generateAuthUrl({ scope: scopes }))
+    res.redirect(googleOauthClient.generateAuthUrl({ scope: scopes }));
 })
 
 
@@ -79,16 +74,20 @@ router.get('/oauth2/redirect/google', (req, res) => {
 
 /**
  * @swagger
- * /api/v1/auth/verify/{id}:
- *  get:
+ * /api/v1/auth:
+ *  post:
  *      description: Verify Id_token
  *      tags: [Auth]
- *      parameters:
- *          - in: path
- *            name: id
- *            type: string
- *            required: true
- *            description: user_id_token
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          id:
+ *                              type: string
+ *                              description: user_id_token
  *      responses:
  *          200:
  *              description: OK
@@ -96,14 +95,14 @@ router.get('/oauth2/redirect/google', (req, res) => {
  *              description: unverified
  */
 
-router.get('/verify/:id', (req, res) => {
-    var id_token = req.params.id
+router.post('/', (req, res) => {
+    var id_token = req.body.id
     verify(id_token)
         .then(()=>{
             res.sendStatus(200)
         })
         .catch((err)=>{
-            res.status(400).send('unverified')
+            res.status(400).json({message : "unverify"})
         })
 })
 

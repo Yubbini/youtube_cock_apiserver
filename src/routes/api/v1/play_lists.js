@@ -1,8 +1,8 @@
 'use strict'
 
-const express = require('express');
-const { displayvideo_v1beta } = require('googleapis');
-const cock = require('../../../models/cock');
+const express = require('express')
+const { displayvideo_v1beta } = require('googleapis')
+const cock = require('../../../models/cock')
 
 const router = express.Router()
 
@@ -32,7 +32,7 @@ const router = express.Router()
  *                      title:
  *                          type: string
  *                      color:
- *                          type: string
+ *                          type: number
  *  playlist:
  *      type: object
  *      properties:
@@ -41,13 +41,13 @@ const router = express.Router()
  *          title:
  *              type: string
  *          color:
- *              type: string
+ *              type: number
  */
 
 
 /**
  * @swagger
- * /api/v1/play_lists/add_playlist:
+ * /api/v1/play_lists:
  *  post:
  *      description: Add playlists.
  *      tags: [PlayList]
@@ -72,8 +72,8 @@ const router = express.Router()
  *          500:
  *              description: server error
  */
-router.post('/add_playlist', (req, res) => {
-    const data = req.body;
+router.post('/', (req, res) => {
+    const data = req.body
     cock.updateOne(
         {uid : data.uid},
         {
@@ -81,8 +81,8 @@ router.post('/add_playlist', (req, res) => {
                 playlist : data.playlist
             }
         }, function(err, docs){
-            if(err) res.status(500).send({message : err});
-            else if(!docs) res.status(400).send({message: "user not found"});
+            if(err) res.status(500).json({message : err})
+            else if(!docs) res.status(400).json({message: "user not found"})
             else res.sendStatus(200)
         }
     )
@@ -90,7 +90,7 @@ router.post('/add_playlist', (req, res) => {
 
 /**
  * @swagger
- * /api/v1/play_lists/find_playlist/{uid}:
+ * /api/v1/play_lists/{uid}:
  *  get:
  *      description: Returns a playlists of the user in the database.
  *      tags: [PlayList]
@@ -109,13 +109,13 @@ router.post('/add_playlist', (req, res) => {
  *              description: server error
  */
 
-router.get('/find_playlist/:uid', (req, res) => {
-    const data = req.params;
+router.get('/:uid', (req, res) => {
+    const data = req.params
     cock.findOne(
         {uid : data.uid},
         function(err, docs){
-            if(err) res.status(500).send({message : err});
-            else if(!docs) res.status(400).send({message : "user not found"});
+            if(err) res.status(500).json({message : err})
+            else if(!docs) res.status(400).json({message : "user not found"})
             else res.status(200).json({
                 playlist : docs.playlist
             })
@@ -125,7 +125,7 @@ router.get('/find_playlist/:uid', (req, res) => {
 
 /**
  * @swagger
- * /api/v1/play_lists/delete_playlist/{uid}/{id}:
+ * /api/v1/play_lists/{uid}/{id}:
  *  delete:
  *      description: Delete a playlist of the user in the database.
  *      tags: [PlayList]
@@ -150,7 +150,7 @@ router.get('/find_playlist/:uid', (req, res) => {
  *          
  */
 
-router.delete('/delete_playlist/:uid/:id', (req, res) => {
+router.delete('/:uid/:id', (req, res) => {
     const data = req.params;
     cock.updateOne(
         {uid : data.uid},
@@ -161,13 +161,13 @@ router.delete('/delete_playlist/:uid/:id', (req, res) => {
                 }
             }
         }, function(err, docs){
-            if(err) res.status(500).send({message : err});
-            else if(!docs) res.status(400).send({message : "user not found"})
+            if(err) res.status(500).json({message : err})
+            else if(!docs) res.status(400).json({message : "user not found"})
             else {
                 playlist : cock.findOne({uid:data.uid},function(err, docs2){
-                    if(err);
-                    else if(!docs);
-                    else res.status(200).send(docs2.playlist)
+                    if(err) res.status(500).json({message : err})
+                    else if(!docs) res.status(400).json({message : "user not found"})
+                    else res.status(200).json(docs2.playlist)
                 })
             }
         }
