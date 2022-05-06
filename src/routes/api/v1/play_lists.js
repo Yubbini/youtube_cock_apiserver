@@ -1,8 +1,7 @@
 'use strict'
 
+const { assert } = require('chai')
 const express = require('express')
-const { displayvideo_v1beta } = require('googleapis')
-const { toolresults } = require('googleapis/build/src/apis/toolresults')
 const request = require('request')
 const cock = require('../../../models/cock')
 
@@ -80,26 +79,26 @@ const router = express.Router()
  */
 router.post('/', (req, res) => {
     const id_token = req.get('id_token')
-    const json_data = {'id':id_token}
+    const json_data = { 'id': id_token }
     const auth_option = {
-        url : process.env['AUTHAPI_URL'],
+        url: process.env['AUTHAPI_URL'],
         body: json_data,
-        json : true
+        json: true
     }
-    request.post(auth_option, function(err, response, body){
-        if(err) res.status(500).json({message : err})
-        else{
-            if(response.statusCode=='200'){
+    request.post(auth_option, function (err, response, body) {
+        if (err) res.status(500).json({ message: err })
+        else {
+            if (response.statusCode == '200') {
                 const data = req.body
                 cock.updateOne(
-                    {uid : body['sub']},
+                    { uid: body['sub'] },
                     {
-                        $push : {
-                            playlist : data.playlist
+                        $push: {
+                            playlist: data.playlist
                         }
-                    }, function(err, docs){
-                        if(err) res.status(500).json({message : err})
-                        else if(!docs) res.status(400).json({message: "user not found"})
+                    }, function (err, docs) {
+                        if (err) res.status(500).json({ message: err })
+                        else if (!docs) res.status(400).json({ message: "user not found" })
                         else res.sendStatus(200)
                     }
                 )
@@ -132,24 +131,24 @@ router.post('/', (req, res) => {
 
 router.get('/', (req, res) => {
     const id_token = req.get('id_token')
-    const json_data = {'id':id_token}
+    const json_data = { 'id': id_token }
     const auth_option = {
-        url : process.env['AUTHAPI_URL'],
+        url: process.env['AUTHAPI_URL'],
         body: json_data,
-        json : true
+        json: true
     }
-    request.post(auth_option, function(err, response, body){
-        if(err) res.status(500).json({message : err})
-        else{
-            if(response.statusCode == 200){
+    request.post(auth_option, function (err, response, body) {
+        if (err) res.status(500).json({ message: err })
+        else {
+            if (response.statusCode == 200) {
                 const data = req.params
                 cock.findOne(
-                    {uid : body['sub']},
-                    function(err, docs){
-                        if(err) res.status(500).json({message : err})
-                        else if(!docs) res.status(400).json({message : "user not found"})
+                    { uid: body['sub'] },
+                    function (err, docs) {
+                        if (err) res.status(500).json({ message: err })
+                        else if (!docs) res.status(400).json({ message: "user not found" })
                         else res.status(200).json({
-                            playlist : docs.playlist
+                            playlist: docs.playlist
                         })
                     }
                 )
@@ -187,32 +186,32 @@ router.get('/', (req, res) => {
 
 router.delete('/:id', (req, res) => {
     const id_token = req.get('id_token')
-    const json_data = {'id':id_token}
+    const json_data = { 'id': id_token }
     const auth_option = {
-        url : process.env['AUTHAPI_URL'],
+        url: process.env['AUTHAPI_URL'],
         body: json_data,
-        json : true
+        json: true
     }
-    request.post(auth_option, function(err, response, body){
-        if(err) res.status(500).json({message : err})
-        else{
-            if(response.statusCode == 200){
+    request.post(auth_option, function (err, response, body) {
+        if (err) res.status(500).json({ message: err })
+        else {
+            if (response.statusCode == 200) {
                 const data = req.params;
                 cock.updateOne(
-                    {uid : body['sub']},
+                    { uid: body['sub'] },
                     {
-                        $pull : {
-                            playlist : {
-                                id : data.id
+                        $pull: {
+                            playlist: {
+                                id: data.id
                             }
                         }
-                    }, function(err, docs){
-                        if(err) res.status(500).json({message : err})
-                        else if(!docs) res.status(400).json({message : "user not found"})
+                    }, function (err, docs) {
+                        if (err) res.status(500).json({ message: err })
+                        else if (!docs) res.status(400).json({ message: "user not found" })
                         else {
-                            playlist : cock.findOne({uid:body['sub']},function(err, docs2){
-                                if(err) res.status(500).json({message : err})
-                                else if(!docs) res.status(400).json({message : "user not found"})
+                            playlist: cock.findOne({ uid: body['sub'] }, function (err, docs2) {
+                                if (err) res.status(500).json({ message: err })
+                                else if (!docs) res.status(400).json({ message: "user not found" })
                                 else res.status(200).json(docs2.playlist)
                             })
                         }
