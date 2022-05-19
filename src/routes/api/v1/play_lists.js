@@ -54,12 +54,10 @@ const router = express.Router()
  *      tags: [PlayList]
  *      parameters:
  *          - in : header
- *            name : id_token
+ *            name : Authorization
  *            type : string
- *            required : true
  *            description : google_id_token
  *      requestBody:
- *          required: true
  *          content:
  *              application/json:
  *                  schema:
@@ -78,18 +76,18 @@ const router = express.Router()
  *              description: server error
  */
 router.post('/', (req, res) => {
-    const id_token = req.get('id_token')
+    const id_token = req.get('Authorization')
     const json_data = { 'id': id_token }
     const auth_option = {
         url: process.env['AUTHAPI_URL'],
         body: json_data,
         json: true
     }
+    const data = req.body
     request.post(auth_option, function (err, response, body) {
         if (err) res.status(500).json({ message: err })
         else {
             if (response.statusCode == '200') {
-                const data = req.body
                 cock.updateOne(
                     { uid: body['sub'] },
                     {
@@ -102,8 +100,11 @@ router.post('/', (req, res) => {
                         else res.sendStatus(200)
                     }
                 )
+                    .setOptions({ runValidators: true })
             }
-            else console.log("not 200")
+            else {
+                res.status(400).json({ message: "user not found" })
+            }
         }
     })
 })
@@ -116,9 +117,8 @@ router.post('/', (req, res) => {
  *      tags: [PlayList]
  *      parameters:
  *          - in : header
- *            name : id_token
+ *            name : Authorization
  *            type : string
- *            required: true
  *            description : google_id_token
  *      responses:
  *          200:
@@ -130,7 +130,7 @@ router.post('/', (req, res) => {
  */
 
 router.get('/', (req, res) => {
-    const id_token = req.get('id_token')
+    const id_token = req.get('Authorization')
     const json_data = { 'id': id_token }
     const auth_option = {
         url: process.env['AUTHAPI_URL'],
@@ -152,6 +152,7 @@ router.get('/', (req, res) => {
                         })
                     }
                 )
+                    .setOptions({ runValidators: true })
             }
         }
     })
@@ -165,14 +166,12 @@ router.get('/', (req, res) => {
  *      tags: [PlayList]
  *      parameters:
  *          - in : header
- *            name : id_token
+ *            name : Authorization
  *            type : string
- *            required: true
  *            description : google_id_token
  *          - in: path
  *            name: id
  *            type: string
- *            required: true
  *            description: playlist_id
  *      responses:
  *          200: 
@@ -185,7 +184,7 @@ router.get('/', (req, res) => {
  */
 
 router.delete('/:id', (req, res) => {
-    const id_token = req.get('id_token')
+    const id_token = req.get('Authorization')
     const json_data = { 'id': id_token }
     const auth_option = {
         url: process.env['AUTHAPI_URL'],
@@ -217,6 +216,7 @@ router.delete('/:id', (req, res) => {
                         }
                     }
                 )
+                    .setOptions({ runValidators: true })
             }
         }
     })
