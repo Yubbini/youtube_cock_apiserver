@@ -3,17 +3,17 @@
 const swaggerJSDoc = require('swagger-jsdoc');
 
 const host = process.env.HOST || 'localhost'
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 80
 
 const swaggerDefinition = {
-    openapi : '3.0.0',
-    info : { // 정보 작성
-        title : 'youtube_cock',
-        version : '1.0.0',
-        description : 'youtube_cock_docs'
+    openapi: '3.0.0',
+    info: { // 정보 작성
+        title: 'youtube_cock',
+        version: '1.0.0',
+        description: 'youtube_cock_docs'
     },
-    host : `${host}:${port}`,
-    basePath : '/',
+    host: `${host}:${port}`,
+    basePath: '/',
     schemes: ['http', 'https']
 };
 
