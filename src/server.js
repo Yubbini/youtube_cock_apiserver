@@ -8,7 +8,7 @@ const port = process.env.PORT || 8080
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
-
+/*
 const mongoose = require('mongoose')
 
 mongoose.connect(process.env['URL'], { useUnifiedTopology: true, useNewUrlParser: true });
@@ -21,3 +21,4 @@ db.on("error", () => {
 db.once("open", () => {
     console.log("> successfully opened the database");
 });
+*/
