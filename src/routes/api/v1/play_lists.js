@@ -133,7 +133,7 @@ router.get('/', (req, res) => {
     const id_token = req.get('Authorization')
     const json_data = { 'id': id_token }
     const auth_option = {
-        url: process.env['AUTHAPI_URL'],
+        url: process.env.AUTHAPI_URL,
         body: json_data,
         json: true,
         contentType: "application/json"
