@@ -135,8 +135,7 @@ router.get('/', (req, res) => {
     const auth_option = {
         url: process.env.AUTHAPI_URL,
         body: json_data,
-        json: true,
-        contentType: "application/json"
+        json: true
     }
     request.post(auth_option, function (err, response, body) {
         if (err) res.status(500).json({ message: err })
