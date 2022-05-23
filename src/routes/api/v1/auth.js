@@ -103,7 +103,7 @@ router.post('/', (req, res) => {
             res.status(200).json(result)
         })
         .catch((err) => {
-            res.status(400).json({ message: "err" })
+            res.status(400).json({ message: err })
         })
 })
 
