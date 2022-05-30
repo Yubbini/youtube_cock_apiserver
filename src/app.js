@@ -11,6 +11,9 @@ const logger = require('./middlewares/logger')
 
 const api = require('./routes/api')
 
+const helmet = require('helmet')
+app.use(helmet())
+
 app.use(logger)
 
 app.use(cors())
