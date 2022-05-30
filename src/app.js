@@ -41,6 +41,16 @@ if (swagger_on === 'true') {
  *         description: "successful operation"
  *
  */
+
+ if(process.env.NODE_ENV === 'production'){
+    app.use(function(req, res, next){
+        if(req.headers['x-forwarded-proto'] !== 'https' && req.path !== process.env_LE_URL){
+            return res.redirect(['https://', req.get('Host'), req.url].join(''));
+        }
+        return next();
+    })
+}
+
 app.get('/', (req, res) => {
     res.send('Hello World!')
 })
